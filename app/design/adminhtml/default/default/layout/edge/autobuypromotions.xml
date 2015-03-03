@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout>
+    <adminhtml_autobuypromotions_productstab>
+        <block type="core/text_list" name="root" output="toHtml">
+            <block type="autobuypromotions/adminhtml_edit_tab_products" name="autobuypromotions.edit.tab.products"/>
+            <block type="adminhtml/widget_grid_serializer" name="autobuypromotions.edit.serializer.products">
+                <action method="initSerializerBlock">
+                    <grid_block_name>autobuypromotions.edit.tab.products</grid_block_name>
+                    <data_callback>getSelectedAutoBuyPromotionsProducts</data_callback>
+                    <hidden_input_name>auto_buy_promotions_product_ids</hidden_input_name>
+                    <reload_param_name>auto_buy_promotions_products</reload_param_name>
+                </action>
+            </block>
+        </block>
+    </adminhtml_autobuypromotions_productstab>
+    <adminhtml_autobuypromotions_productsgrid>
+        <block type="core/text_list" name="root" output="toHtml">
+            <block type="autobuypromotions/adminhtml_edit_tab_products" name="autobuypromotions.edit.tab.products"/>
+        </block>
+    </adminhtml_autobuypromotions_productsgrid>
+</layout>
