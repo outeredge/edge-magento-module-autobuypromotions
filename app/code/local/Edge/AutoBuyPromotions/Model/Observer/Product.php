@@ -14,7 +14,7 @@ class Edge_AutoBuyPromotions_Model_Observer_Product
         $item = $observer->getEvent()->getQuoteItem();
 
         $quote = Mage::getModel('sales/quote');
-        $validateItem = $quote->addProduct($item->getProduct());
+        $validateItem = $quote->addProduct($item->getProduct(), $item->getBuyRequest());
 
         $cart = Mage::getSingleton('checkout/cart');
         foreach ($rules as $rule) {
