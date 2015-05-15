@@ -7,7 +7,7 @@ class Edge_AutoBuyPromotions_Model_Observer_Product
         $rules = Mage::getModel('salesrule/rule')->getCollection()
             ->addFieldToFilter('auto_buy_promotions_product_ids', array('neq' => null));
 
-        if (empty($rules)) {
+        if ($rules->count() < 1) {
             return;
         }
 
