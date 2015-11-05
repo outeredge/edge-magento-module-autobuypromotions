@@ -4,29 +4,42 @@ class Edge_AutoBuyPromotions_Model_Observer_Product
 {
     public function autoBuyPromotions(Varien_Event_Observer $observer)
     {
-        $rules = Mage::getModel('salesrule/rule')->getCollection()
-            ->addFieldToFilter('auto_buy_promotions_product_ids', array('neq' => null));
-
+        $rules = Mage::getResourceModel('salesrule/rule_collection')
+            ->addFieldToFilter('auto_buy_promotions_product_ids', array('neq' => null))
+            ->load();
         if ($rules->count() < 1) {
             return;
         }
-
-        $item = $observer->getEvent()->getQuoteItem();
-
-        $quote = Mage::getModel('sales/quote');
-        $validateItem = $quote->addProduct($item->getProduct(), $item->getBuyRequest());
-
-        $cart = Mage::getSingleton('checkout/cart');
         foreach ($rules as $rule) {
-            if ($rule->getConditions()->validate($validateItem)){
+            $rule->afterLoad();
+        }
+
+        $quoteId = Mage::getSingleton('checkout/session')->getQuoteId();
+        $realQuote = Mage::getSingleton('sales/quote')->load($quoteId);
+        $product = Mage::getModel('catalog/product')->load($observer->getProduct()->getId());
+        $item = Mage::getModel('sales/quote_item')->setQuote($realQuote)->setProduct($product);
+        $item->setAllItems(array($product));
+        $item->getProduct()->setProductId($product->getEntityId());
+
+        $addProductsToCart = array();
+        foreach ($rules as $rule) {
+            if ($rule->getConditions()->validate($item)) {
                 foreach ($rule->getAutoBuyPromotionsProducts() as $product) {
                     $cartProduct = Mage::getModel('catalog/product')->load($product->getId());
-                    $cart->addProduct($cartProduct);
+                    if ($cartProduct->isAvailable()) {
+                        $addProductsToCart[] = $cartProduct;
+                    }
                 }
             }
         }
 
-        $cart->save();
-        Mage::getSingleton('checkout/session')->setCartWasUpdated(true);
+        if (!empty($addProductsToCart)) {
+            $cart = Mage::getSingleton('checkout/cart');
+            foreach ($addProductsToCart as $cartProduct) {
+                $cart->addProduct($cartProduct);
+            }
+            $cart->save();
+            Mage::getSingleton('checkout/session')->setCartWasUpdated(true);
+        }
     }
 }

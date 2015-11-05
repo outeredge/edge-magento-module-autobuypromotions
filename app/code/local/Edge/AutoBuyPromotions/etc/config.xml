@@ -34,7 +34,7 @@
             </autobuypromotions_setup>
         </resources>
         <events>
-            <checkout_cart_product_add_after>
+            <checkout_cart_add_product_complete>
                 <observers>
                     <autobuypromotions_quote_item>
                         <type>singleton</type>
@@ -42,7 +42,7 @@
                         <method>autoBuyPromotions</method>
                     </autobuypromotions_quote_item>
                 </observers>
-            </checkout_cart_product_add_after>
+            </checkout_cart_add_product_complete>
         </events>
     </global>
     <admin>
