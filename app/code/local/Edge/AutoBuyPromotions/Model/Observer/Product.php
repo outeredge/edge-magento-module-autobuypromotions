@@ -25,7 +25,9 @@ class Edge_AutoBuyPromotions_Model_Observer_Product
         foreach ($rules as $rule) {
             if ($rule->getConditions()->validate($item)) {
                 foreach ($rule->getAutoBuyPromotionsProducts() as $product) {
-                    $cartProduct = Mage::getModel('catalog/product')->load($product->getId());
+                    $cartProduct = Mage::getModel('catalog/product')
+                        ->setStoreId(Mage::app()->getStore()->getId())
+                        ->load($product->getId());
                     if ($cartProduct->isAvailable()) {
                         $addProductsToCart[] = $cartProduct;
                     }
@@ -34,12 +36,10 @@ class Edge_AutoBuyPromotions_Model_Observer_Product
         }
 
         if (!empty($addProductsToCart)) {
-            $cart = Mage::getSingleton('checkout/cart');
             foreach ($addProductsToCart as $cartProduct) {
-                $cart->addProduct($cartProduct);
+                $realQuote->addProduct($cartProduct);
             }
-            $cart->save();
-            Mage::getSingleton('checkout/session')->setCartWasUpdated(true);
+            $realQuote->collectTotals()->save();
         }
     }
 }
