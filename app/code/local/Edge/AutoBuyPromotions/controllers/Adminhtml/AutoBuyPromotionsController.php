@@ -2,6 +2,11 @@
 
 class Edge_AutoBuyPromotions_Adminhtml_AutoBuyPromotionsController extends Mage_Adminhtml_Controller_Action
 {
+    protected function _isAllowed()
+    {
+        return Mage::getSingleton('admin/session')->isAllowed('promo/quote');
+    }
+    
     /**
      * Initialize rule from request parameters
      * @return Mage_SalesRule_Model_Rule
