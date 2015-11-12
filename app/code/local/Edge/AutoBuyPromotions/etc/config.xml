@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Edge_AutoBuyPromotions>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </Edge_AutoBuyPromotions>
     </modules>
     <global>
@@ -12,16 +12,35 @@
             </autobuypromotions>
             <adminhtml>
                 <rewrite>
-                    <promo_quote_edit_tabs>Edge_AutoBuyPromotions_Block_Adminhtml_Edit_Tabs</promo_quote_edit_tabs>
+                    <promo_quote_grid>Edge_AutoBuyPromotions_Block_Adminhtml_Promo_Quote_Grid</promo_quote_grid>
+                    <promo_quote_edit>Edge_AutoBuyPromotions_Block_Adminhtml_Promo_Quote_Edit</promo_quote_edit>
                 </rewrite>
             </adminhtml>
         </blocks>
+        <helpers>
+            <autobuypromotions>
+                <class>Edge_AutoBuyPromotions_Helper</class>
+            </autobuypromotions>
+        </helpers>
         <models>
-            <salesrule>
+            <autobuypromotions>
+                <class>Edge_AutoBuyPromotions_Model</class>
+                <resourceModel>autobuypromotions_resource</resourceModel>
+            </autobuypromotions>
+            <autobuypromotions_resource>
+                <class>Edge_AutoBuyPromotions_Model_Resource</class>
+                <entities>
+                    <autobuypromotions>
+                        <table>autobuypromotions</table>
+                    </autobuypromotions>
+                </entities>
+            </autobuypromotions_resource>
+            <salesrule_resource>
                 <rewrite>
-                    <rule>Edge_AutoBuyPromotions_Model_Rule</rule>
+                    <rule>Edge_AutoBuyPromotions_Model_Resource_Rule</rule>
+                    <rule_collection>Edge_AutoBuyPromotions_Model_Resource_Rule_Collection</rule_collection>
                 </rewrite>
-            </salesrule>
+            </salesrule_resource>
         </models>
         <resources>
             <autobuypromotions_setup>
@@ -57,6 +76,24 @@
         </routers>
     </admin>
     <adminhtml>
+        <events>
+            <adminhtml_promo_quote_edit_tab_main_prepare_form>
+                <observers>
+                    <autobuypromotions_salesrule_form>
+                        <class>autobuypromotions/adminhtml_observer</class>
+                        <method>addFieldToForm</method>
+                    </autobuypromotions_salesrule_form>
+                </observers>
+            </adminhtml_promo_quote_edit_tab_main_prepare_form>
+            <adminhtml_controller_salesrule_prepare_save>
+                <observers>
+                    <autobuypromotions_salesrule_prepare_save>
+                        <class>autobuypromotions/adminhtml_observer</class>
+                        <method>addProductIdsToRequest</method>
+                    </autobuypromotions_salesrule_prepare_save>
+                </observers>
+            </adminhtml_controller_salesrule_prepare_save>
+        </events>
         <layout>
             <updates>
                 <autobuypromotions>

@@ -9,7 +9,7 @@ class Edge_AutoBuyPromotions_Model_Observer_Product
 
         $rules = Mage::getResourceModel('salesrule/rule_collection')
             ->setValidationFilter(Mage::app()->getStore()->getWebsiteId(), $quote->getCustomerGroupId())
-            ->addFieldToFilter('auto_buy_promotions_product_ids', array('neq' => null))
+            ->addAutoBuyPromotionFilter()
             ->load();
         if ($rules->count() < 1) {
             return;
@@ -17,7 +17,6 @@ class Edge_AutoBuyPromotions_Model_Observer_Product
         foreach ($rules as $rule) {
             $rule->afterLoad();
         }
-
 
         $product = Mage::getModel('catalog/product')->load($observer->getProduct()->getId());
         $item = Mage::getModel('sales/quote_item')->setQuote($quote)->setProduct($product);
@@ -28,10 +27,10 @@ class Edge_AutoBuyPromotions_Model_Observer_Product
         foreach ($rules as $rule) {
             if ($rule->getIsActive()) {
                 if ($rule->getConditions()->validate($item)) {
-                    foreach ($rule->getAutoBuyPromotionsProducts() as $product) {
+                    foreach ($rule->getProductId() as $productId) {
                         $cartProduct = Mage::getModel('catalog/product')
                             ->setStoreId(Mage::app()->getStore()->getId())
-                            ->load($product->getId());
+                            ->load($productId);
                         if ($cartProduct->isAvailable()) {
                             $addProductsToCart[] = $cartProduct;
                         }

@@ -4,6 +4,10 @@
         <Edge_AutoBuyPromotions>
             <active>true</active>
             <codePool>local</codePool>
+            <depends>
+                <Mage_Adminhtml/>
+                <Mage_SalesRule/>
+            </depends>
         </Edge_AutoBuyPromotions>
     </modules>
 </config>

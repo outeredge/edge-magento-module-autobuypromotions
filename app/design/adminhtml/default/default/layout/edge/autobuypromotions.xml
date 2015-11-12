@@ -1,21 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <layout>
-    <adminhtml_autobuypromotions_productstab>
+
+    <adminhtml_promo_autobuypromotions_index>
+        <update handle="adminhtml_promo_quote_index"/>
+    </adminhtml_promo_autobuypromotions_index>
+
+    <adminhtml_promo_autobuypromotions_edit>
+        <reference name="head">
+            <action method="setCanLoadExtJs"><flag>1</flag></action>
+            <action method="setCanLoadRulesJs"><flag>1</flag></action>
+        </reference>
+        <reference name="left">
+            <block type="autobuypromotions/adminhtml_autoBuyPromotion_edit_tabs" name="promo_quote_edit_tabs">
+                <block type="adminhtml/promo_quote_edit_tab_main" name="promo_quote_edit_tab_main" />
+                <block type="adminhtml/promo_quote_edit_tab_conditions" name="promo_quote_edit_tab_conditions"/>
+                <block type="adminhtml/promo_quote_edit_tab_actions" name="promo_quote_edit_tab_actions"/>
+                <block type="adminhtml/promo_quote_edit_tab_labels" name="promo_quote_edit_tab_labels"/>
+                <action method="addTab"><name>main_section</name><block>promo_quote_edit_tab_main</block></action>
+                <action method="addTab"><name>conditions_section</name><block>promo_quote_edit_tab_conditions</block></action>
+                <action method="addTab"><name>actions_section</name><block>promo_quote_edit_tab_actions</block></action>
+                <action method="addTab"><name>labels_section</name><block>promo_quote_edit_tab_labels</block></action>
+            </block>
+        </reference>
+        <reference name="content">
+            <block type="adminhtml/promo_quote_edit" name="promo_quote_edit"></block>
+        </reference>
+    </adminhtml_promo_autobuypromotions_edit>
+
+    <adminhtml_promo_autobuypromotions_productstab>
         <block type="core/text_list" name="root" output="toHtml">
-            <block type="autobuypromotions/adminhtml_edit_tab_products" name="autobuypromotions.edit.tab.products"/>
+            <block type="autobuypromotions/adminhtml_autoBuyPromotion_edit_tab_products" name="autobuypromotions.edit.tab.products"/>
             <block type="adminhtml/widget_grid_serializer" name="autobuypromotions.edit.serializer.products">
                 <action method="initSerializerBlock">
                     <grid_block_name>autobuypromotions.edit.tab.products</grid_block_name>
-                    <data_callback>getSelectedAutoBuyPromotionsProducts</data_callback>
-                    <hidden_input_name>auto_buy_promotions_product_ids</hidden_input_name>
-                    <reload_param_name>auto_buy_promotions_products</reload_param_name>
+                    <data_callback>getSelectedProducts</data_callback>
+                    <hidden_input_name>product_ids</hidden_input_name>
+                    <reload_param_name>products</reload_param_name>
                 </action>
             </block>
         </block>
-    </adminhtml_autobuypromotions_productstab>
-    <adminhtml_autobuypromotions_productsgrid>
+    </adminhtml_promo_autobuypromotions_productstab>
+    <adminhtml_promo_autobuypromotions_productsgrid>
         <block type="core/text_list" name="root" output="toHtml">
-            <block type="autobuypromotions/adminhtml_edit_tab_products" name="autobuypromotions.edit.tab.products"/>
+            <block type="autobuypromotions/adminhtml_autoBuyPromotion_edit_tab_products" name="autobuypromotions.edit.tab.products"/>
         </block>
-    </adminhtml_autobuypromotions_productsgrid>
+    </adminhtml_promo_autobuypromotions_productsgrid>
+
 </layout>
