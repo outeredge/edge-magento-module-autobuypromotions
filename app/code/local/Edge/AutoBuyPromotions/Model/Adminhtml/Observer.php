@@ -26,8 +26,8 @@ class Edge_AutoBuyPromotions_Model_Adminhtml_Observer
         $request = $observer->getRequest();
 
         $post = $request->getPost();
-        if (isset($post['product_ids'])) {
-            $productIds = $request->getPost('product_ids');
+        if (isset($post['autobuyproduct_ids'])) {
+            $productIds = $post['autobuyproduct_ids'];
             if ($productIds !== "") {
                 $productIds = explode('&', $productIds);
                 if (!empty($productIds)) {

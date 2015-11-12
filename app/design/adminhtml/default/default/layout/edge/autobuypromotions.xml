@@ -34,7 +34,7 @@
                 <action method="initSerializerBlock">
                     <grid_block_name>autobuypromotions.edit.tab.products</grid_block_name>
                     <data_callback>getSelectedProducts</data_callback>
-                    <hidden_input_name>product_ids</hidden_input_name>
+                    <hidden_input_name>autobuyproduct_ids</hidden_input_name>
                     <reload_param_name>products</reload_param_name>
                 </action>
             </block>
