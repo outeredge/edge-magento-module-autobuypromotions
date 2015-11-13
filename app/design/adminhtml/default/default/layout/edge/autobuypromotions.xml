@@ -23,6 +23,7 @@
         <reference name="content">
             <block type="adminhtml/promo_quote_edit" name="promo_quote_edit"></block>
         </reference>
+        <update handle="editor"/>
     </adminhtml_promo_autobuypromotions_edit>
 
     <adminhtml_promo_autobuypromotions_productstab>
