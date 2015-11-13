@@ -13,11 +13,9 @@
         <reference name="left">
             <block type="autobuypromotions/adminhtml_autoBuyPromotion_edit_tabs" name="promo_quote_edit_tabs">
                 <block type="adminhtml/promo_quote_edit_tab_main" name="promo_quote_edit_tab_main" />
-                <block type="adminhtml/promo_quote_edit_tab_conditions" name="promo_quote_edit_tab_conditions"/>
                 <block type="adminhtml/promo_quote_edit_tab_actions" name="promo_quote_edit_tab_actions"/>
                 <block type="adminhtml/promo_quote_edit_tab_labels" name="promo_quote_edit_tab_labels"/>
                 <action method="addTab"><name>main_section</name><block>promo_quote_edit_tab_main</block></action>
-                <action method="addTab"><name>conditions_section</name><block>promo_quote_edit_tab_conditions</block></action>
                 <action method="addTab"><name>actions_section</name><block>promo_quote_edit_tab_actions</block></action>
                 <action method="addTab"><name>labels_section</name><block>promo_quote_edit_tab_labels</block></action>
             </block>
