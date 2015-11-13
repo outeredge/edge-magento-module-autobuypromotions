@@ -15,6 +15,7 @@ class Edge_AutoBuyPromotions_Model_Adminhtml_Observer
             $fieldset->removeField('use_auto_generation');
             $fieldset->removeField('uses_per_coupon');
 
+            $model->setIsAutoBuyPromotion(true);
             $fieldset->addField('is_auto_buy_promotion', 'hidden', array(
                 'name'  => 'is_auto_buy_promotion',
                 'value' => true
