@@ -85,6 +85,14 @@
                     </autobuypromotions_salesrule_form>
                 </observers>
             </adminhtml_promo_quote_edit_tab_main_prepare_form>
+            <adminhtml_block_salesrule_actions_prepareform>
+                <observers>
+                    <autobuypromotions_salesrule_form>
+                        <class>autobuypromotions/adminhtml_observer</class>
+                        <method>removeActionsFieldset</method>
+                    </autobuypromotions_salesrule_form>
+                </observers>
+            </adminhtml_block_salesrule_actions_prepareform>
             <adminhtml_controller_salesrule_prepare_save>
                 <observers>
                     <autobuypromotions_salesrule_prepare_save>
