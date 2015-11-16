@@ -18,10 +18,17 @@ class Edge_AutoBuyPromotions_Model_Observer_Product
             $rule->afterLoad();
         }
 
+        $fakeQuote = clone $quote;
+        $fakeQuote->setId(null);
+
         $product = Mage::getModel('catalog/product')->load($observer->getProduct()->getId());
-        $item = Mage::getModel('sales/quote_item')->setQuote($quote)->setProduct($product);
+
+        $item = Mage::getModel('sales/quote_item')->setQuote($fakeQuote)->setProduct($product);
         $item->setAllItems(array($product));
         $item->getProduct()->setProductId($product->getEntityId());
+        $item->setQty(1);
+        
+        $item->getQuote()->setData('items_collection', array($item));
 
         $addProductsToCart = array();
         foreach ($rules as $rule) {
