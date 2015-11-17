@@ -4,7 +4,7 @@ class Edge_AutoBuyPromotions_Model_Adminhtml_Observer
 {
     public function addFieldToForm(Varien_Event_Observer $observer)
     {
-        if (Mage::app()->getRequest()->getControllerModule() === 'Edge_AutoBuyPromotions_Adminhtml') {
+        if (Mage::app()->getRequest()->getControllerModule() === Mage::helper('autobuypromotions')->getControllerModule()) {
 
             $form = $observer->getForm();
             $fieldset = $form->getElement('base_fieldset');
@@ -31,7 +31,7 @@ class Edge_AutoBuyPromotions_Model_Adminhtml_Observer
 
     public function removeActionsFieldset(Varien_Event_Observer $observer)
     {
-        if (Mage::app()->getRequest()->getControllerModule() === 'Edge_AutoBuyPromotions_Adminhtml') {
+        if (Mage::app()->getRequest()->getControllerModule() === Mage::helper('autobuypromotions')->getControllerModule()) {
 
             $form = $observer->getForm();
             $form->getElements()->remove('actions_fieldset');
@@ -40,7 +40,7 @@ class Edge_AutoBuyPromotions_Model_Adminhtml_Observer
 
     public function addProductIdsToRequest(Varien_Event_Observer $observer)
     {
-        if (Mage::app()->getRequest()->getControllerModule() === 'Edge_AutoBuyPromotions_Adminhtml') {
+        if (Mage::app()->getRequest()->getControllerModule() === Mage::helper('autobuypromotions')->getControllerModule()) {
 
             $request = $observer->getRequest();
             $post = $request->getPost();

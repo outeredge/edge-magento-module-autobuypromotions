@@ -9,7 +9,7 @@ class Edge_AutoBuyPromotions_Block_Adminhtml_Promo_Quote_Grid extends Mage_Admin
         $collection->addWebsitesToResult();
 
         $collection->addFieldToFilter('is_auto_buy_promotion', array(
-            'eq' => ($this->getRequest()->getControllerModule() === 'Edge_AutoBuyPromotions_Adminhtml')
+            'eq' => ($this->getRequest()->getControllerModule() === Mage::helper('autobuypromotions')->getControllerModule())
         ));
         $this->setCollection($collection);
 
