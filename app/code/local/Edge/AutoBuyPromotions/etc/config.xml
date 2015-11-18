@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Edge_AutoBuyPromotions>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
         </Edge_AutoBuyPromotions>
     </modules>
     <global>
@@ -33,6 +33,12 @@
                     <autobuypromotions>
                         <table>autobuypromotions</table>
                     </autobuypromotions>
+                    <category>
+                        <table>autobuypromotions_category</table>
+                    </category>
+                    <product>
+                        <table>autobuypromotions_product</table>
+                    </product>
                 </entities>
             </autobuypromotions_resource>
             <salesrule_resource>
@@ -62,6 +68,14 @@
                     </autobuypromotions_quote_item>
                 </observers>
             </checkout_cart_add_product_complete>
+            <salesrule_rule_condition_combine>
+                <observers>
+                    <autobuypromotions_keywords_condition>
+                        <class>Edge_AutoBuyPromotions_Model_Observer_SalesRule</class>
+                        <method>addKeywordCondition</method>
+                    </autobuypromotions_keywords_condition>
+                </observers>
+            </salesrule_rule_condition_combine>
         </events>
     </global>
     <admin>

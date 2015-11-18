@@ -45,4 +45,23 @@
         </block>
     </adminhtml_promo_autobuypromotions_productsgrid>
 
+    <adminhtml_promo_autobuypromotions_triggerproductstab>
+        <block type="core/text_list" name="root" output="toHtml">
+            <block type="autobuypromotions/adminhtml_autoBuyPromotion_edit_tab_triggerProducts" name="autobuypromotions.edit.tab.triggerproducts"/>
+            <block type="adminhtml/widget_grid_serializer" name="autobuypromotions.edit.serializer.triggerproducts">
+                <action method="initSerializerBlock">
+                    <grid_block_name>autobuypromotions.edit.tab.triggerproducts</grid_block_name>
+                    <data_callback>getSelectedTriggerProducts</data_callback>
+                    <hidden_input_name>autobuytriggerproduct_ids</hidden_input_name>
+                    <reload_param_name>triggerproducts</reload_param_name>
+                </action>
+            </block>
+        </block>
+    </adminhtml_promo_autobuypromotions_triggerproductstab>
+    <adminhtml_promo_autobuypromotions_triggerproductsgrid>
+        <block type="core/text_list" name="root" output="toHtml">
+            <block type="autobuypromotions/adminhtml_autoBuyPromotion_edit_tab_triggerProducts" name="autobuypromotions.edit.tab.triggerproducts"/>
+        </block>
+    </adminhtml_promo_autobuypromotions_triggerproductsgrid>
+
 </layout>

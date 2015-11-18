@@ -21,10 +21,6 @@ class Edge_AutoBuyPromotions_Model_Adminhtml_Observer
                 'value' => true
             ));
 
-            Mage::helper('edge/adminhtml_form')->productSelector($model, $fieldset, 'trigger_product', array(
-                'label' => Mage::helper('autobuypromotions')->__('Trigger Product')
-            ), 'name');
-
             $form->setValues($model->getData());
         }
     }
@@ -59,18 +55,27 @@ class Edge_AutoBuyPromotions_Model_Adminhtml_Observer
                     ->getProductId();
             }
 
+            if (isset($post['autobuytriggerproduct_ids'])) {
+                $triggerProductIds = $post['autobuytriggerproduct_ids'];
+                if ($triggerProductIds !== "") {
+                    $triggerProductIds = explode('&', $triggerProductIds);
+                    if (!empty($triggerProductIds)) {
+                        $post['trigger_products'] = $triggerProductIds;
+                    }
+                }
+            } elseif (isset($post['rule_id'])) {
+                $post['trigger_products'] = Mage::getModel('salesrule/rule')
+                    ->load($post['rule_id'])
+                    ->getTriggerProductId();
+            }
+
             $post['rule']['conditions'] = array('1' => array(
                 'type'          => 'salesrule/rule_condition_combine',
                 'aggregator'    => 'all',
                 'value'         => '1',
                 'new_child'     => null
             ));
-            if (isset($post['trigger_product'])) {
-                $conditionSku = Mage::getModel('catalog/product')
-                    ->setStoreId(Mage::app()->getStore()->getId())
-                    ->load($post['trigger_product'])
-                    ->getSku();
-
+            if ($post['keywords'] !== "" || !empty($post['categorys'])) {
                 $post['rule']['conditions']['1--1'] = array(
                     'type'          => 'salesrule/rule_condition_product_subselect',
                     'attribute'     => 'qty',
@@ -79,11 +84,32 @@ class Edge_AutoBuyPromotions_Model_Adminhtml_Observer
                     'aggregator'    => 'all',
                     'new_child'     => null
                 );
+
+                $this->_createConditionsFromFilters($post);
+            }
+            elseif (isset($post['trigger_products'])) {
+                $post['rule']['conditions']['1--1'] = array(
+                    'type'          => 'salesrule/rule_condition_product_subselect',
+                    'attribute'     => 'qty',
+                    'operator'      => '>=',
+                    'value'         => '1',
+                    'aggregator'    => 'all',
+                    'new_child'     => null
+                );
+
+                $conditionsSkus = array();
+                foreach ($post['trigger_products'] as $triggerProductId) {
+                    $conditionsSkus[] = Mage::getModel('catalog/product')
+                        ->setStoreId(Mage::app()->getStore()->getId())
+                        ->load($triggerProductId)
+                        ->getSku();
+                }
+                $conditionSkusCsv = implode(', ', $conditionsSkus);
                 $post['rule']['conditions']['1--1--1'] = array(
                     'type'          => 'salesrule/rule_condition_product',
                     'attribute'     => 'sku',
-                    'operator'      => '==',
-                    'value'         => $conditionSku
+                    'operator'      => '()',
+                    'value'         => $conditionSkusCsv
                 );
             }
 
@@ -111,6 +137,30 @@ class Edge_AutoBuyPromotions_Model_Adminhtml_Observer
             }
 
             $request->setPost($post);
+        }
+    }
+
+    protected function _createConditionsFromFilters(&$post)
+    {
+        $key = 1;
+
+        if ($post['keywords'] !== "") {
+            $post['rule']['conditions']["1--1--{$key}"] = array(
+                'type'          => 'autobuypromotions/rule_condition_keyword',
+                'attribute'     => 'keyword',
+                'operator'      => '==',
+                'value'         => $post['keywords']
+            );
+            $key++;
+        }
+
+        if (!empty($post['categorys'])) {
+            $post['rule']['conditions']["1--1--{$key}"] = array(
+                'type'          => 'salesrule/rule_condition_product',
+                'attribute'     => 'category_ids',
+                'operator'      => '()',
+                'value'         => implode(', ', $post['categorys'])
+            );
         }
     }
 }

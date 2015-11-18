@@ -22,4 +22,18 @@ class Edge_AutoBuyPromotions_Adminhtml_Promo_AutoBuyPromotionsController extends
         $this->loadLayout();
         $this->renderLayout();
     }
+
+    public function triggerProductsTabAction()
+    {
+        $this->_initRule();
+        $this->loadLayout();
+        $this->renderLayout();
+    }
+
+    public function triggerProductsGridAction()
+    {
+        $this->_initRule();
+        $this->loadLayout();
+        $this->renderLayout();
+    }
 }
