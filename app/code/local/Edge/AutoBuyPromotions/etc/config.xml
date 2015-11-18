@@ -62,8 +62,7 @@
             <checkout_cart_add_product_complete>
                 <observers>
                     <autobuypromotions_quote_item>
-                        <type>singleton</type>
-                        <class>Edge_AutoBuyPromotions_Model_Observer_Product</class>
+                        <class>autobuypromotions/observer_product</class>
                         <method>autoBuyPromotions</method>
                     </autobuypromotions_quote_item>
                 </observers>
@@ -71,7 +70,7 @@
             <salesrule_rule_condition_combine>
                 <observers>
                     <autobuypromotions_keywords_condition>
-                        <class>Edge_AutoBuyPromotions_Model_Observer_SalesRule</class>
+                        <class>autobuypromotions/observer_salesRule</class>
                         <method>addKeywordCondition</method>
                     </autobuypromotions_keywords_condition>
                 </observers>
