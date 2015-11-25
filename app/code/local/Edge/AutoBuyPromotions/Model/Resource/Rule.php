@@ -13,6 +13,10 @@ class Edge_AutoBuyPromotions_Model_Resource_Rule extends Mage_SalesRule_Model_Re
 
     protected function _saveFilter($object, $type, $tableName=null, $columnName=null)
     {
+        if (!$object->has("{$type}s")) {
+            return;
+        }
+        
         $old = $this->lookupFilterIds($object->getId(), $type, $tableName, $columnName);
         $new = (array)$object->getData("{$type}s");
 
