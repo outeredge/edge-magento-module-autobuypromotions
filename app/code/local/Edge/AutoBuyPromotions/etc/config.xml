@@ -12,6 +12,7 @@
             </autobuypromotions>
             <adminhtml>
                 <rewrite>
+                    <promo_quote>Edge_AutoBuyPromotions_Block_Adminhtml_Promo_Quote</promo_quote>
                     <promo_quote_grid>Edge_AutoBuyPromotions_Block_Adminhtml_Promo_Quote_Grid</promo_quote_grid>
                     <promo_quote_edit>Edge_AutoBuyPromotions_Block_Adminhtml_Promo_Quote_Edit</promo_quote_edit>
                 </rewrite>
