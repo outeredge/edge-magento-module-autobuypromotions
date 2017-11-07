@@ -48,6 +48,11 @@
                     <rule_collection>Edge_AutoBuyPromotions_Model_Resource_Rule_Collection</rule_collection>
                 </rewrite>
             </salesrule_resource>
+            <salesrule>
+                <rewrite>
+                    <rule>Edge_AutoBuyPromotions_Model_Rule</rule>
+                </rewrite>
+            </salesrule>
         </models>
         <resources>
             <autobuypromotions_setup>
