@@ -13,16 +13,27 @@ class Edge_AutoBuyPromotions_Model_Resource_Rule extends Mage_SalesRule_Model_Re
 
     protected function _saveFilter($object, $type, $tableName=null, $columnName=null)
     {
+        $columnId = ($columnName ? $columnName : ($tableName ? $tableName : $type));
+        $table = $this->getTable('autobuypromotions/' . ($tableName ? $tableName : $type));
+        
         if (!$object->hasData("{$type}s")) {
+            
+            if (Mage::app()->getStore()->isAdmin() && Mage::app()->getRequest()->isPost()) {
+                // most likely saving data in the admin and need to delete records if removed
+                $delete = $this->lookupFilterIds($object->getId(), $type, $tableName, $columnName);
+                if ($delete) {
+                    $this->_getWriteAdapter()->delete($table, array(
+                        "rule_id = ?" => (int) $object->getId(),
+                        "{$columnId}_id IN (?)" => $delete
+                    ));
+                }
+            }
+            
             return;
         }
  
         $old = $this->lookupFilterIds($object->getId(), $type, $tableName, $columnName);
         $new = (array)$object->getData("{$type}s");
-
-        $columnId = ($columnName ? $columnName : ($tableName ? $tableName : $type));
-
-        $table = $this->getTable('autobuypromotions/' . ($tableName ? $tableName : $type));
 
         $insert = array_diff($new, $old);
         $delete = array_diff($old, $new);
