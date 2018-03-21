@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Edge_AutoBuyPromotions>
-            <version>1.0.3</version>
+            <version>1.0.4</version>
         </Edge_AutoBuyPromotions>
     </modules>
     <global>
@@ -40,6 +40,9 @@
                     <product>
                         <table>autobuypromotions_product</table>
                     </product>
+                    <brand>
+                        <table>autobuypromotions_brand</table>
+                    </brand>
                 </entities>
             </autobuypromotions_resource>
             <salesrule_resource>
@@ -48,9 +51,14 @@
                     <rule_collection>Edge_AutoBuyPromotions_Model_Resource_Rule_Collection</rule_collection>
                 </rewrite>
             </salesrule_resource>
-            <salesrule>
+            <checkout>
                 <rewrite>
-                    <rule>Edge_AutoBuyPromotions_Model_Rule</rule>
+                    <cart>Edge_AutoBuyPromotions_Model_Checkout_Cart</cart>
+                </rewrite>
+            </checkout>
+             <salesrule>
+                <rewrite>
+                    <rule_condition_product>Edge_AutoBuyPromotions_Model_Rule_Condition_Product</rule_condition_product>
                 </rewrite>
             </salesrule>
         </models>
@@ -81,7 +89,45 @@
                     </autobuypromotions_keywords_condition>
                 </observers>
             </salesrule_rule_condition_combine>
+            <sales_quote_add_item>
+                <observers>
+                    <edge_autobuypromotions_set_link>
+                        <class>Edge_AutoBuyPromotions_Model_Observer_QuoteItem</class>
+                        <method>setAutoBuyPromotionLink</method>
+                    </edge_autobuypromotions_set_link>
+                    <edge_autobuypromotions_set_rule>
+                        <class>Edge_AutoBuyPromotions_Model_Observer_QuoteItem</class>
+                        <method>setAutoBuyPromotionRule</method>
+                    </edge_autobuypromotions_set_rule>
+                </observers>
+            </sales_quote_add_item>
+            <sales_quote_remove_item>
+                <observers>
+                    <edgeproduct_attributes_autobuypromotions_remove_link_item>
+                        <class>Edge_AutoBuyPromotions_Model_Observer_QuoteItem</class>
+                        <method>removeAutoBuyPromotionLinkItem</method>
+                    </edge_autobuypromotions_remove_link_item>
+                </observers>
+            </sales_quote_remove_item>
+            <checkout_cart_save_after>
+                <observers>
+                    <edge_autobuypromotions_remove_rule_item>
+                        <class>Edge_AutoBuyPromotions_Model_Observer_QuoteItem</class>
+                        <method>removeAutoBuyPromotionRuleItem</method>
+                    </edge_autobuypromotions_remove_rule_item>
+                </observers>
+            </checkout_cart_save_after>
         </events>
+        <sales>
+            <quote>
+                <item>
+                    <product_attributes>
+                        <auto_buy_promotion_link/>
+                        <auto_buy_promotion_rule/>
+                    </product_attributes>
+                </item>
+            </quote>
+        </sales>
     </global>
     <admin>
         <routers>
@@ -96,6 +142,14 @@
     </admin>
     <adminhtml>
         <events>
+            <autobuypromotions_edit_tab_filters_prepare_form>
+                <observers>
+                    <hardcloud_autobuypromotions_edit_tab_filters_prepare_form>
+                        <class>Hardcloud_AutoBuyPromotions_Model_Adminhtml_Observer</class>
+                        <method>addBrandsToFilters</method>
+                    </hardcloud_autobuypromotions_edit_tab_filters_prepare_form>
+                </observers>
+            </autobuypromotions_edit_tab_filters_prepare_form>
             <adminhtml_promo_quote_edit_tab_main_prepare_form>
                 <observers>
                     <autobuypromotions_salesrule_form>
