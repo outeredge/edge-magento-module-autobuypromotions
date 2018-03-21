@@ -144,10 +144,10 @@
         <events>
             <autobuypromotions_edit_tab_filters_prepare_form>
                 <observers>
-                    <hardcloud_autobuypromotions_edit_tab_filters_prepare_form>
-                        <class>Hardcloud_AutoBuyPromotions_Model_Adminhtml_Observer</class>
+                    <autobuypromotions_edit_tab_filters_prepare_form>
+                        <class>Edge_AutoBuyPromotions_Model_Adminhtml_Observer</class>
                         <method>addBrandsToFilters</method>
-                    </hardcloud_autobuypromotions_edit_tab_filters_prepare_form>
+                    </autobuypromotions_edit_tab_filters_prepare_form>
                 </observers>
             </autobuypromotions_edit_tab_filters_prepare_form>
             <adminhtml_promo_quote_edit_tab_main_prepare_form>
