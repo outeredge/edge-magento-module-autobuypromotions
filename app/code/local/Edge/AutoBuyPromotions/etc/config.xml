@@ -103,7 +103,7 @@
             </sales_quote_add_item>
             <sales_quote_remove_item>
                 <observers>
-                    <edgeproduct_attributes_autobuypromotions_remove_link_item>
+                    <edge_autobuypromotions_remove_link_item>
                         <class>Edge_AutoBuyPromotions_Model_Observer_QuoteItem</class>
                         <method>removeAutoBuyPromotionLinkItem</method>
                     </edge_autobuypromotions_remove_link_item>
