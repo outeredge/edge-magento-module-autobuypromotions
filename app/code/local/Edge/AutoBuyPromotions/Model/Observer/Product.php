@@ -4,37 +4,41 @@ class Edge_AutoBuyPromotions_Model_Observer_Product
 {
     public function autoBuyPromotions(Varien_Event_Observer $observer)
     {
+        $resource = Mage::getSingleton('core/resource');
         $quoteId = Mage::getSingleton('checkout/session')->getQuoteId();
         $quote = Mage::getSingleton('sales/quote')->load($quoteId);
 
         $rules = Mage::getResourceModel('salesrule/rule_collection')
-            ->setValidationFilter(Mage::app()->getStore()->getWebsiteId(), $quote->getCustomerGroupId())
-            ->addAutoBuyPromotionFilter()
-            ->load();
+            ->setValidationFilter(Mage::app()->getStore()->getWebsiteId(), $quote->getCustomerGroupId());
+        
+        $rules->getSelect()->join(
+            array($resource->getTableName('autobuypromotions/autobuypromotions')),
+            'main_table.rule_id = autobuypromotions.rule_id',
+            array()
+        )->group('rule_id');
+            
+        $rules->load();
+            
         if ($rules->count() < 1) {
             return;
         }
+        
         foreach ($rules as $rule) {
             $rule->afterLoad();
-        }
-
-        $fakeQuote = clone $quote;
-        $fakeQuote->setId(null);
-
-        $product = Mage::getModel('catalog/product')->load($observer->getProduct()->getId());
-
-        $item = Mage::getModel('sales/quote_item')->setQuote($fakeQuote)->setProduct($product);
-        $item->setAllItems(array($product));
-        $item->getProduct()->setProductId($product->getEntityId());
-        $item->setQty(1);
-        
-        $item->getQuote()->setData('items_collection', array($item));
-
-        $addProductsToCart = array();
-        foreach ($rules as $rule) {
-            if ($rule->getIsActive()) {
-                if ($rule->getConditions()->validate($item)) {
-                    foreach ($rule->getProductId() as $productId) {
+            if (!$rule->getIsActive()) {
+                return;
+            }
+            
+            if ($rule->validate($quote->getShippingAddress())) {
+                foreach ($rule->getProductId() as $productId) {
+                    $addProduct = true;
+                    foreach ($quote->getAllVisibleItems() as $item) {
+                        if ($item->getProductId() === $productId) {
+                            $addProduct = false;
+                        }
+                    }
+                    
+                    if ($addProduct) {
                         $cartProduct = Mage::getModel('catalog/product')
                             ->setStoreId(Mage::app()->getStore()->getId())
                             ->load($productId);
@@ -45,12 +49,12 @@ class Edge_AutoBuyPromotions_Model_Observer_Product
                 }
             }
         }
-
+       
         if (!empty($addProductsToCart)) {
             foreach ($addProductsToCart as $cartProduct) {
                 $quote->addProduct($cartProduct);
             }
             $quote->collectTotals()->save();
-        }
+        } 
     }
 }

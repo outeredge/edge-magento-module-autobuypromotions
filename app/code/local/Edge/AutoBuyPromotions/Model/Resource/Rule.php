@@ -4,36 +4,35 @@ class Edge_AutoBuyPromotions_Model_Resource_Rule extends Mage_SalesRule_Model_Re
 {
     protected function _afterSave(Mage_Core_Model_Abstract $object)
     {
+        $this->_saveFilter($object, 'brand');
         $this->_saveFilter($object, 'product', 'autobuypromotions', 'product');
         $this->_saveFilter($object, 'category');
         $this->_saveFilter($object, 'trigger_product', 'product');
+        
+        if ($object->getSaveActionsRuleIdAfter()) {
+            $rule = Mage::getModel('salesrule/rule')->load($object->getId());
+            $actions = $object->getSaveActionsRuleIdAfter();
+            $actions['1--2']['value'] = $object->getId();
+            $rule->setData('actions', $actions);
+            $rule->loadPost($rule->getData());
+            $rule->save();
+        }
 
         return parent::_afterSave($object);
     }
 
     protected function _saveFilter($object, $type, $tableName=null, $columnName=null)
     {
-        $columnId = ($columnName ? $columnName : ($tableName ? $tableName : $type));
-        $table = $this->getTable('autobuypromotions/' . ($tableName ? $tableName : $type));
-        
         if (!$object->hasData("{$type}s")) {
-            
-            if (Mage::app()->getStore()->isAdmin() && Mage::app()->getRequest()->isPost()) {
-                // most likely saving data in the admin and need to delete records if removed
-                $delete = $this->lookupFilterIds($object->getId(), $type, $tableName, $columnName);
-                if ($delete) {
-                    $this->_getWriteAdapter()->delete($table, array(
-                        "rule_id = ?" => (int) $object->getId(),
-                        "{$columnId}_id IN (?)" => $delete
-                    ));
-                }
-            }
-            
             return;
         }
- 
+
         $old = $this->lookupFilterIds($object->getId(), $type, $tableName, $columnName);
         $new = (array)$object->getData("{$type}s");
+
+        $columnId = ($columnName ? $columnName : ($tableName ? $tableName : $type));
+
+        $table = $this->getTable('autobuypromotions/' . ($tableName ? $tableName : $type));
 
         $insert = array_diff($new, $old);
         $delete = array_diff($old, $new);
@@ -60,6 +59,7 @@ class Edge_AutoBuyPromotions_Model_Resource_Rule extends Mage_SalesRule_Model_Re
 
     protected function _afterLoad(Mage_Core_Model_Abstract $object)
     {
+        $this->_loadFilter($object, 'brand');
         $this->_loadFilter($object, 'product', 'autobuypromotions', 'product');
         $this->_loadFilter($object, 'category');
         $this->_loadFilter($object, 'trigger_product', 'product');

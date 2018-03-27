@@ -1,5 +1,4 @@
 <?php
-
 class Edge_AutoBuyPromotions_Model_Rule extends Mage_SalesRule_Model_Rule
 { 
     /**

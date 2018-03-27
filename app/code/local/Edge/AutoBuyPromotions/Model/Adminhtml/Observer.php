@@ -36,24 +36,26 @@ class Edge_AutoBuyPromotions_Model_Adminhtml_Observer
 
     public function addProductIdsToRequest(Varien_Event_Observer $observer)
     {
-        if (Mage::app()->getRequest()->getControllerModule() === Mage::helper('autobuypromotions')->getControllerModule()) {
+        $request = $observer->getRequest();
+        $post = $request->getPost();
 
-            $request = $observer->getRequest();
-            $post = $request->getPost();
-
-            if (isset($post['autobuyproduct_ids'])) {
-                $productIds = $post['autobuyproduct_ids'];
-                if ($productIds !== "") {
-                    $productIds = explode('&', $productIds);
-                    if (!empty($productIds)) {
-                        $post['products'] = $productIds;
-                    }
+        if (isset($post['autobuyproduct_ids'])) {
+            $productIds = $post['autobuyproduct_ids'];
+            if ($productIds !== "") {
+                $productIds = explode('&', $productIds);
+                if (!empty($productIds)) {
+                    $post['products'] = $productIds;
                 }
-            } elseif (isset($post['rule_id'])) {
-                $post['products'] = Mage::getModel('salesrule/rule')
-                    ->load($post['rule_id'])
-                    ->getProductId();
             }
+            $request->setPost($post);
+        } elseif (isset($post['rule_id'])) {
+            $post['products'] = Mage::getModel('salesrule/rule')
+                ->load($post['rule_id'])
+                ->getProductId();
+            $request->setPost($post);
+        }
+            
+        if (Mage::app()->getRequest()->getControllerModule() === Mage::helper('autobuypromotions')->getControllerModule()) {
 
             if (isset($post['autobuytriggerproduct_ids'])) {
                 $triggerProductIds = $post['autobuytriggerproduct_ids'];
@@ -69,13 +71,15 @@ class Edge_AutoBuyPromotions_Model_Adminhtml_Observer
                     ->getTriggerProductId();
             }
 
+
             $post['rule']['conditions'] = array('1' => array(
                 'type'          => 'salesrule/rule_condition_combine',
                 'aggregator'    => 'all',
                 'value'         => '1',
                 'new_child'     => null
             ));
-            if ($post['keywords'] !== "" || !empty($post['categorys'])) {
+
+            if ($post['keywords'] !== "" || !empty($post['brands']) || !empty($post['categorys'])) {
                 $post['rule']['conditions']['1--1'] = array(
                     'type'          => 'salesrule/rule_condition_product_subselect',
                     'attribute'     => 'qty',
@@ -112,6 +116,17 @@ class Edge_AutoBuyPromotions_Model_Adminhtml_Observer
                     'value'         => $conditionSkusCsv
                 );
             }
+            
+            if ($post['order_total'] !== "" && $post['order_total'] > 0) {
+                $totalConditionKey = isset($post['rule']['conditions']['1--1']) ? '1--2' : '1--1';
+                $post['rule']['conditions'][$totalConditionKey] = array(
+                    'type'      => 'salesrule/rule_condition_address',
+                    'attribute' => 'base_subtotal',
+                    'operator'  => '>=',
+                    'value'     => $post['order_total']
+                );
+            }
+
 
             $post['rule']['actions'] = array('1' => array(
                 'type'          => 'salesrule/rule_condition_product_combine',
@@ -134,6 +149,24 @@ class Edge_AutoBuyPromotions_Model_Adminhtml_Observer
                     'operator'      => '()',
                     'value'         => $actionSkusCsv
                 );
+                if ($post['order_total'] !== "" && $post['order_total'] > 0) {
+                    $post['rule']['actions']['1--2'] = array(
+                        'type'          => 'salesrule/rule_condition_product',
+                        'attribute'     => 'quote_item_auto_buy_promotion_rule',
+                        'operator'      => '==',
+                        'value'         => isset($post['rule_id']) ? $post['rule_id'] : '0'
+                    );
+                    if (!isset($post['rule_id'])) {
+                        $post['save_actions_rule_id_after'] = $post['rule']['actions'];
+                    }
+                } else {
+                    $post['rule']['actions']['1--2'] = array(
+                        'type'          => 'salesrule/rule_condition_product',
+                        'attribute'     => 'quote_item_auto_buy_promotion_link',
+                        'operator'      => '>=',
+                        'value'         => '1'
+                    );
+                }
             }
 
             $request->setPost($post);
@@ -161,6 +194,51 @@ class Edge_AutoBuyPromotions_Model_Adminhtml_Observer
                 'operator'      => '()',
                 'value'         => implode(', ', $post['categorys'])
             );
+            $key++;
         }
+
+        if (!empty($post['brands'])) {
+            $post['rule']['conditions']["1--1--{$key}"] = array(
+                'type'          => 'salesrule/rule_condition_product_combine',
+                'aggregator'    => 'any',
+                'value'         => '1',
+                'new_child'     => null
+            );
+
+            $brandKey = 1;
+            foreach ($post['brands'] as $brandId) {
+                $post['rule']['conditions']["1--1--{$key}--{$brandKey}"] = array(
+                    'type'          => 'salesrule/rule_condition_product',
+                    'attribute'     => 'brand_id',
+                    'operator'      => '==',
+                    'value'         => $brandId
+                );
+                $brandKey++;
+            }
+        }
+    }
+    
+    public function addBrandsToFilters($observer)
+    {
+        $model = Mage::registry('current_promo_quote_rule');
+        $form = $observer->getForm();
+        $fieldset = $form->getElement('filters_fieldset');
+
+        $brands = array();
+        $brandCollection = Mage::getModel('brand/brand')
+            ->getCollection();
+        foreach ($brandCollection as $brand) {
+            $brands[] = array(
+                'value' => $brand->getId(),
+                'label' => $brand->getName()
+            );
+        }
+        $fieldset->addField('brand_id', 'multiselect', array(
+            'label'     => Mage::helper('autobuypromotions')->__('Brands'),
+            'name'      => 'brands[]',
+            'values'    => $brands
+        ));
+
+        $form->setValues($model->getData());
     }
 }

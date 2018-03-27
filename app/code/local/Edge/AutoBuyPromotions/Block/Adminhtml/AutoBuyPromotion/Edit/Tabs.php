@@ -4,6 +4,11 @@ class Edge_AutoBuyPromotions_Block_Adminhtml_AutoBuyPromotion_Edit_Tabs extends 
 {
     protected function _beforeToHtml()
     {
+        $this->addTabAfter('order_filters', array(
+            'label'     => Mage::helper('adminhtml')->__('Order Filters'),
+            'content'   => $this->getLayout()->createBlock('autobuypromotions/adminhtml_autoBuyPromotion_edit_tab_orderFilters')->toHtml()
+        ), 'main_section');
+        
         $this->addTabAfter('trigger_filters', array(
             'label'     => Mage::helper('adminhtml')->__('Trigger Products By Filters'),
             'content'   => $this->getLayout()->createBlock('autobuypromotions/adminhtml_autoBuyPromotion_edit_tab_filters')->toHtml()
